@@ -1,0 +1,606 @@
+{
+  "name": "AI Agente Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=# Identidad:\nEres un asistente virtual de atencion al cliente de la empresa Cognitech Solutions que se dedica al desarrollo de automatizaciones y agentes de inteligencia artificial.\n\n# Objetivo:\n\nTu objetivo principal consiste en resolver las dudas de los usuarios que te contactan que son potenciales clientes , acerca de los servicios que ofrece Cognitech Solutions.\n\nTambien tienes la capacidad de agendar una reunion con el usuario. Debes tratar de ofrecer al usuario de forma proactiva la opcion de agendar una reunion. Sin embargo nunca ofrezcas agendar una reunion sin que el cliente te halla solicitado previamente por tus servicios.\n\nPara agendar una reunion solicita al usuario la siguiente informacion: nombre y apellidos, email, fecha de la reunion y una descripcion de la solucion que se necesita (solo pide esto si no te lo ha dicho antes).\n\nUna vez que te halla dado toda la informacion, utiliza tu herramienta \"ComprobarDisponibilidadGoogleCalendar\" y si hay disponibilidad utiliza la herramienta \"CrearEventoGoogleCalendar\",donde el titulo de la reunion \"Consultoria IA - {nombre}\" y la descripcion de la reunion sera la {descripcion} aportada por el usuario\n\n# Herramientas:\n\n* \"Conocimiento\": Usa esta herramienta para obtener información de la empresa Cognitech Solutions y los servicios ofrecidos.\n\n* \"Calculator\": utilizar esta herramienta cuando necesite hacer operaciones matematicas complejas.\n\n* \"Think\": utiliza esta herramienta para analizar que accion realizar y para mejorar tu respuesta.\n\n* \"ComprobarDisponibilidadGoogleCalendar\": utilizar esta herramienta para comprobar la disponibilidad de la fecha solicitada por el usuario. Siempre tienes que ejecutar esta herramienta \"CrearEventoGoogleCalendar\"\n\n* \"CrearEventoGoogleCalendar\": utiliza esta herramienta para agendar una reunion donde el titulo de la reunion \"Consultoria IA - {nombre}\" y la descripcion de la reunion sera la {descripcion} aportada por el usuario\n\n# Comportamiento:\n\n* Usa un tono profesional y alegre.\n\n* Nunca corrijas a los usuarios. Limítate a responder sus consultas.\n\n* Cuando la cosulta no tenga nada que ver con tu cometido limítate a responder respetuosamente que no tienes autorización.\n\n* No puedes explicar los procesos de agendar cita con palabras tecnicas . \n\n# Recordatorio:\n\n* Si en tu entrada el  usuario te dice \"/star\" identificalo como si fuese hola y actua de la misma forma.\n\n* Cuando la cosulta no tenga nada que ver con tu cometido limítate a responder respetuosamente que no tienes autorización.\n\n* Utiliza siempre tu MEMORY para mantener el hilo de la conversacion. Es muy importante que cuando le pidas datos al usuario para agendar una reunion, consultes tu MEMORY para no pedirle datos repetidos.\n\n* Fecha y hora actual: {{ $now }}\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "90df1389-ac53-4afa-ba94-28a549dbfd94",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.1,
+          "topP": 0.9
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        256
+      ],
+      "id": "a0a9974a-76f5-4668-9abd-abd40bcf9682",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "R6SQ6RAx1dVGWiuV",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        256
+      ],
+      "id": "46d8b9d0-8e00-482f-9be6-2bccc38ca0eb",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Utiliza esta herramienta para obtener información relacionada a la empresa Cognitech Solutions y los servicios que brindan",
+        "documentId": {
+          "__rl": true,
+          "value": "1l4oRiszBFjwzuy3QwNNkYmJe3qoi0w59qjsAaQmyFi0",
+          "mode": "list",
+          "cachedResultName": "Cognitech Solutions Services",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4oRiszBFjwzuy3QwNNkYmJe3qoi0w59qjsAaQmyFi0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4oRiszBFjwzuy3QwNNkYmJe3qoi0w59qjsAaQmyFi0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        96,
+        256
+      ],
+      "id": "2ff32b10-3009-4f98-9d36-8c832cb71645",
+      "name": "Conocimiento",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qhgTq7wGjLpmZjU8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        240,
+        256
+      ],
+      "id": "1d17c16b-f440-44e7-9cd1-6e455939cbc8",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        256
+      ],
+      "id": "4faed9f5-0b43-43ed-a407-439ad9b7bcdf",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Utiliza esta herramienta para disfrutar disponibilidad en el calendario.",
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "liusvanideveloper@gmail.com",
+          "mode": "list",
+          "cachedResultName": "liusvanideveloper@gmail.com"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', `Introduce aqui la fecha de inicio de la reunión`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', `Introduce aqui la fecha de finalizacion de la reunion`, 'string') }}",
+        "options": {
+          "timezone": {
+            "__rl": true,
+            "value": "Cuba",
+            "mode": "list",
+            "cachedResultName": "Cuba"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        256
+      ],
+      "id": "138eeb93-45de-4001-bce1-0fed7e12ab16",
+      "name": "ComprobarDisponibilidadGoogleCalendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "FL2qZFtAmZIThp1K",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Usa esta herramienta para crear una reunión",
+        "calendar": {
+          "__rl": true,
+          "value": "liusvanideveloper@gmail.com",
+          "mode": "list",
+          "cachedResultName": "liusvanideveloper@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "attendees": [
+            "liusvani25@gmail.com",
+            "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attendees1_Attendees', ``, 'string') }}"
+          ],
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "sendUpdates": "all",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        256
+      ],
+      "id": "a604be30-9c36-48bd-b5cf-0c08f0795f99",
+      "name": "CrearEventoGoogleCalendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "5tj2Qkn4dV1PrtSI",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -880,
+        -80
+      ],
+      "id": "c7ba9522-9524-4327-b781-70fbb5511929",
+      "name": "Telegram Trigger",
+      "webhookId": "daed57f8-4a2b-48d9-b852-442a13b17220",
+      "credentials": {
+        "telegramApi": {
+          "id": "6X64zyNRsZDFPZTx",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "MarkdownV2"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        0
+      ],
+      "id": "7d019c10-22ca-4c79-a470-c8cd4e90b5f3",
+      "name": "Send a text message",
+      "webhookId": "be7fbec0-6a94-4495-af95-7d02a05c81ab",
+      "credentials": {
+        "telegramApi": {
+          "id": "6X64zyNRsZDFPZTx",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.output || \"Mensaje de prueba\";\n\n// Caracteres especiales que MarkdownV2 necesita escapar\nconst specialChars = /[_*[\\]()~`>#+\\-=|{}.!]/g;\n\n// Escapamos cada uno con una barra invertida\nconst sanitizedText = rawText.replace(specialChars, match => '\\\\' + match);\n\nreturn {\n  json: {\n    text: sanitizedText,\n    parse_mode: \"MarkdownV2\"\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        0
+      ],
+      "id": "87af8fdc-cb69-4203-b8df-0bf84db49b8d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        64
+      ],
+      "id": "209c145f-8073-4f0c-acfb-d957e8aab53b",
+      "name": "Get a file",
+      "webhookId": "96321303-6f37-46d7-ad55-172ab5874244",
+      "credentials": {
+        "telegramApi": {
+          "id": "6X64zyNRsZDFPZTx",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -304,
+        64
+      ],
+      "id": "487845ed-1564-47d6-bbc8-06ea95fd667b",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ktyhGAVgesidRv0",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a4b30700-2b44-4481-a96b-63b1406c0f6c",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "c7e1ea4c-2537-46b3-826b-43051a025cac",
+              "name": "chatId",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        -192
+      ],
+      "id": "3bb6361c-c412-4900-bdef-32dfb529dbb6",
+      "name": "Texto"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "bbebb18a-34fe-4d94-9dc0-3d0222df206a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2d367229-f761-4ed0-91b8-a2afc61ba532",
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -688,
+        -96
+      ],
+      "id": "ebd42110-a5fc-4763-a9c3-d72c22fce6a8",
+      "name": "Switch Auido - Texto"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ce0c8154-70dd-4aa3-a7a3-e55ffd7ae551",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "ca912bf2-7763-4f03-8f24-e8ba2fc77832",
+              "name": "chatId",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -144,
+        -192
+      ],
+      "id": "68e956a5-df4e-4e53-851a-32da2f1db785",
+      "name": "Unificar texto"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conocimiento": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ComprobarDisponibilidadGoogleCalendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrearEventoGoogleCalendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch Auido - Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Unificar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Texto": {
+      "main": [
+        [
+          {
+            "node": "Unificar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Auido - Texto": {
+      "main": [
+        [
+          {
+            "node": "Texto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificar texto": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ccec7e3f-dcfe-4c25-b8e2-5e0b9536bf37",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "11c402fa63958c18fa56f282e76c8a61862c1a058727565fdce6fd1018e0cd7b"
+  },
+  "id": "qkQLDPh8rmcC1Ivm",
+  "tags": []
+}
