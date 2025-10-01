@@ -1,5 +1,5 @@
 # ia-agent-n8n-telegram
-Este flujo de trabajo en n8n implementa un agente conversacional inteligente que interactúa con usuarios a través de Telegram, ofreciendo información sobre los servicios de la empresa, capaz de gestionar reuniones de consultoría de forma automatizada.
+Este flujo de trabajo en n8n implementa un agente conversacional inteligente que interactúa con usuarios a través de Telegram, ofreciendo información sobre los servicios de la empresa, capacitado para agendar reuniones de consultoría de forma automatizada asi como persistirla.
 
 ##  Características principales
 
