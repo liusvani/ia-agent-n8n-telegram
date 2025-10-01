@@ -24,7 +24,7 @@ Este flujo de trabajo en n8n implementa un agente conversacional inteligente que
 
 ```mermaid
 graph TD
-    Trigger_Telegram --> Switch
+    Trigger_Telegram -->|Entrada_Texto_Audio| Switch
     Switch -->|Texto| Texto
     Switch -->|Auido_File| Telegram_get_a_file
     Telegram_get_a_file -->|Transcribir_Audio_a_Texto| Transcribe_a_recording
