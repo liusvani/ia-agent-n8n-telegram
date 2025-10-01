@@ -12,12 +12,14 @@ Este flujo de trabajo en n8n implementa un agente conversacional inteligente que
 ##  Tecnologías utilizadas
 
 | Componente        | Tecnología / Servicio         |
-|------------------|--------------------------------|
+|-------------------|-------------------------------|
 | Backend Agent     | Google Gemini Chat Model      |
+| Backend Agent     | OPENAI Transcribe a Recording |
+| Trigger Telegram  | Terlegram App                 |
 | Automatización    | n8n                           |
 | Calendario        | Google Calendar API           |
 | Hoja de Cálculo   | Google Sheet API              |
-| Persistencia      | PostgreSQL                    |
+| Persistencia      | SimpleMemory                  |
 | Infraestructura   | Docker / WSL / Linux          |
 
 ##  Arquitectura
