@@ -24,7 +24,9 @@ Este flujo de trabajo en n8n implementa un agente conversacional inteligente que
 
 ```mermaid
 graph TD
-     Edit_Field -->|UnificarTexto| Telegram_Trigger
+    Texto -->|TExto| Edit_Field
+    Transcribe a recording -->|OPENAI| Edit_Field
+    Edit_Field -->|UnificarTexto| Telegram_Trigger
     Telegram_Trigger -->|ChatMessageRecieved| AI_Agent
     AI_Agent -->|Consulta| GoogleGeminiChatModel
     AI_Agent -->|Guarda| PostgreSql
