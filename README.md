@@ -27,7 +27,7 @@ graph TD
     Telegram_get_a_file -->|Texto| Edit_Field 
     Texto -->|Texto| Edit_Field
     Transcribe_a_recording -->|OPENAI| Edit_Field
-    Edit_Field -->|UnificarTexto| Telegram_Trigger
+    Edit_Field -->|Entrada_Agente| Telegram_Trigger
     Telegram_Trigger -->|ChatMessageRecieved| AI_Agent
     AI_Agent -->|Consulta| GoogleGeminiChatModel
     AI_Agent -->|Guarda| PostgreSql
