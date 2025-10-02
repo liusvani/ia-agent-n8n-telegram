@@ -15,7 +15,7 @@ Este flujo de trabajo en n8n implementa un agente conversacional inteligente que
 |-------------------|-------------------------------|
 | Backend Agent     | Google Gemini Chat Model      |
 | Backend Agent     | OPENAI Transcribe a Recording |
-| Trigger Telegram  | Terlegram App                 |
+| Trigger Telegram  | Telegram App                  |
 | Automatización    | n8n                           |
 | Calendario        | Google Calendar API           |
 | Hoja de Cálculo   | Google Sheet API              |
